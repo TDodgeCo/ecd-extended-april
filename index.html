@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sortable Opportunity Table</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Alpine.js -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-gray-100 p-6" x-data="tableApp()" x-init="init()">
+
+  <!-- Table -->
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white border border-gray-200">
+      <thead>
+        <tr class="bg-gray-50">
+          <!-- Example header with sort button -->
+          <th class="px-4 py-2 border-b text-left text-sm font-medium text-gray-600">
+            <button @click="sortBy('createddate')" class="flex items-center space-x-1">
+              <span>Created</span>
+              <span x-show="sortKey==='createddate'" x-text="sortAsc ? '▲' : '▼'"></span>
+            </button>
+          </th>
+          <th class="px-4 py-2 border-b text-left text-sm font-medium text-gray-600">
+            <button @click="sortBy('lastupdatedate')" class="flex items-center space-x-1">
+              <span>Updated</span>
+              <span x-show="sortKey==='lastupdatedate'" x-text="sortAsc ? '▲' : '▼'"></span>
+            </button>
+          </th>
+          <th class="px-4 py-2 border-b text-left text-sm font-medium text-gray-600">
+            <button @click="sortBy('estimatedclosedate')" class="flex items-center space-x-1">
+              <span>ECD</span>
+              <span x-show="sortKey==='estimatedclosedate'" x-text="sortAsc ? '▲' : '▼'"></span>
+            </button>
+          </th>
+          <th class="px-4 py-2 border-b text-left text-sm font-medium text-gray-600">
+            <button @click="sortBy('opty_number')" class="flex items-center space-x-1">
+              <span>Opp</span>
+              <span x-show="sortKey==='opty_number'" x-text="sortAsc ? '▲' : '▼'"></span>
+            </button>
+          </th>
+          <th class="px-4 py-2 border-b text-left text-sm font-medium text-gray-600">
+            <button @click="sortBy('ownername')" class="flex items-center space-x-1">
+              <span>Rep</span>
+              <span x-show="sortKey==='ownername'" x-text="sortAsc ? '▲' : '▼'"></span>
+            </button>
+          </th>
+          <th class="px-4 py-2 border-b text-left text-sm font-medium text-gray-600">
+            <button @click="sortBy('grossrevenue')" class="flex items-center space-x-1">
+              <span>Price</span>
+              <span x-show="sortKey==='grossrevenue'" x-text="sortAsc ? '▲' : '▼'"></span>
+            </button>
+          </th>
+          <th class="px-4 py-2 border-b text-left text-sm font-medium text-gray-600">
+            <button @click="sortBy('percent')" class="flex items-center space-x-1">
+              <span>Markup</span>
+              <span x-show="sortKey==='percent'" x-text="sortAsc ? '▲' : '▼'"></span>
+            </button>
+          </th>
+          <th class="px-4 py-2 border-b text-left text-sm font-medium text-gray-600">
+            <button @click="sortBy('status')" class="flex items-center space-x-1">
+              <span>Status</span>
+              <span x-show="sortKey==='status'" x-text="sortAsc ? '▲' : '▼'"></span>
+            </button>
+          </th>
+          <th class="px-4 py-2 border-b text-left text-sm font-medium text-gray-600">
+            <button @click="sortBy('stage')" class="flex items-center space-x-1">
+              <span>Stage</span>
+              <span x-show="sortKey==='stage'" x-text="sortAsc ? '▲' : '▼'"></span>
+            </button>
+          </th>
+          <th class="px-4 py-2 border-b text-left text-sm font-medium text-gray-600">
+            <button @click="sortBy('width')" class="flex items-center space-x-1">
+              <span>Width</span>
+              <span x-show="sortKey==='width'" x-text="sortAsc ? '▲' : '▼'"></span>
+            </button>
+          </th>
+          <th class="px-4 py-2 border-b text-left text-sm font-medium text-gray-600">
+            <button @click="sortBy('length')" class="flex items-center space-x-1">
+              <span>Length</span>
+              <span x-show="sortKey==='length'" x-text="sortAsc ? '▲' : '▼'"></span>
+            </button>
+          </th>
+          <th class="px-4 py-2 border-b text-left text-sm font-medium text-gray-600">
+            <button @click="sortBy('height')" class="flex items-center space-x-1">
+              <span>Height</span>
+              <span x-show="sortKey==='height'" x-text="sortAsc ? '▲' : '▼'"></span>
+            </button>
+          </th>
+          <!-- Notes column has no sort -->
+          <th class="px-4 py-2 border-b text-center text-sm font-medium text-gray-600">Notes</th>
+          <th class="px-4 py-2 border-b text-left text-sm font-medium text-gray-600">
+            <button @click="sortBy('sastate')" class="flex items-center space-x-1">
+              <span>State</span>
+              <span x-show="sortKey==='sastate'" x-text="sortAsc ? '▲' : '▼'"></span>
+            </button>
+          </th>
+          <th class="px-4 py-2 border-b text-left text-sm font-medium text-gray-600">
+            <button @click="sortBy('buildinguse')" class="flex items-center space-x-1">
+              <span>Use</span>
+              <span x-show="sortKey==='buildinguse'" x-text="sortAsc ? '▲' : '▼'"></span>
+            </button>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <template x-for="row in displayRows()" :key="row.id">
+          <tr class="border-b hover:bg-gray-50">
+            <td class="px-4 py-2 text-sm" x-text="formatDate(row.createddate)"></td>
+            <td class="px-4 py-2 text-sm" x-text="formatDate(row.lastupdatedate)"></td>
+            <td class="px-4 py-2 text-sm" x-text="formatDate(row.estimatedclosedate)"></td>
+            <td class="px-4 py-2 text-sm" x-text="row.opty_number"></td>
+            <td class="px-4 py-2 text-sm" x-text="row.ownername"></td>
+            <td class="px-4 py-2 text-sm" x-text="formatCurrency(row.grossrevenue)"></td>
+            <td class="px-4 py-2 text-sm" x-text="row.percent"></td>
+            <td class="px-4 py-2 text-sm" x-text="row.status"></td>
+            <td class="px-4 py-2 text-sm" x-text="row.stage"></td>
+            <td class="px-4 py-2 text-sm" x-text="row.width"></td>
+            <td class="px-4 py-2 text-sm" x-text="row.length"></td>
+            <td class="px-4 py-2 text-sm" x-text="row.height"></td>
+            <td class="px-4 py-2 text-center">
+              <button
+                @click="viewNotes(row.priornotes)"
+                class="text-blue-600 hover:underline text-sm"
+              >
+                View
+              </button>
+            </td>
+            <td class="px-4 py-2 text-sm" x-text="row.sastate"></td>
+            <td class="px-4 py-2 text-sm" x-text="row.buildinguse"></td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Notes Modal -->
+  <div
+    x-show="showModal"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  >
+    <div
+      @click.away="closeModal()"
+      x-trap.noscroll="showModal"
+      class="bg-white rounded-lg shadow-lg w-11/12 max-w-lg p-6 relative"
+    >
+      <button
+        @click="closeModal()"
+        class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl font-bold"
+      >&times;</button>
+
+      <h2 class="text-xl font-semibold mb-4">Notes</h2>
+      <div class="whitespace-pre-wrap text-sm text-gray-700" x-text="selectedNotes"></div>
+    </div>
+  </div>
+
+  <script>
+    function tableApp() {
+      return {
+        rows: [],               // raw data
+        showModal: false,
+        selectedNotes: '',
+        sortKey: '',            // current sort column
+        sortAsc: true,          // direction
+
+        init() {
+          fetch('./data.json')
+            .then(res => res.json())
+            .then(data => {
+              // filter out Closed - Revision, then store
+              this.rows = data.data.filter(r => r.stage !== 'Closed - Revision');
+            })
+            .catch(err => console.error('Could not load data:', err));
+        },
+
+        formatDate(datetime) {
+          if (!datetime) return '';
+          // split off milliseconds, build an ISO string
+          const [datePart, timePart] = datetime.split(' ');
+          const time = timePart.split('.')[0];           // "HH:MM:SS"
+          const iso = `${datePart}T${time}`;             // "YYYY-MM-DDTHH:MM:SS"
+          const d = new Date(iso);
+          if (isNaN(d)) return datetime;
+  
+          const pad = n => n.toString().padStart(2, '0');
+          const m  = pad(d.getMonth() + 1);
+          const dd = pad(d.getDate());
+          const yyyy = d.getFullYear();
+          const hh = pad(d.getHours());
+          const mm = pad(d.getMinutes());
+  
+          return `${m}/${dd}/${yyyy} ${hh}:${mm}`;
+        },
+
+        formatCurrency(value) {
+          // parse the incoming string/number
+          const num = parseFloat(value);
+          if (isNaN(num)) return value; // bail if it wasn't a number
+        
+          // use the browser’s Intl API for proper grouping and a leading $
+          return new Intl.NumberFormat('en-US', {
+            style:    'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }).format(num);
+        },
+
+        // toggle modal
+        viewNotes(notes) {
+          this.selectedNotes = notes;
+          this.showModal = true;
+        },
+        closeModal() {
+          this.showModal = false;
+          this.selectedNotes = '';
+        },
+
+        // sort logic
+        sortBy(key) {
+          if (this.sortKey === key) {
+            this.sortAsc = !this.sortAsc;
+          } else {
+            this.sortKey = key;
+            this.sortAsc = true;
+          }
+        },
+
+        // returns filtered & sorted rows
+        displayRows() {
+          let arr = [...this.rows];
+          if (this.sortKey) {
+            arr.sort((a, b) => {
+              let va = a[this.sortKey] ?? '';
+              let vb = b[this.sortKey] ?? '';
+              // attempt numeric compare
+              let na = parseFloat(va.toString().replace(/[^0-9.-]/g,'')),
+                  nb = parseFloat(vb.toString().replace(/[^0-9.-]/g,''));
+              if (!isNaN(na) && !isNaN(nb)) {
+                va = na; vb = nb;
+              }
+              if (va < vb) return this.sortAsc ? -1 : 1;
+              if (va > vb) return this.sortAsc ?  1 : -1;
+              return 0;
+            });
+          }
+          return arr;
+        }
+      }
+    }
+  </script>
+</body>
+</html>
