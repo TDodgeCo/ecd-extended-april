@@ -145,24 +145,28 @@
   </div>
 
   <!-- Notes Modal -->
-  <div
-    x-show="showModal"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-  >
-    <div
-      @click.away="closeModal()"
-      x-trap.noscroll="showModal"
-      class="bg-white rounded-lg shadow-lg w-11/12 max-w-lg p-6 relative"
-    >
-      <button
-        @click="closeModal()"
-        class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl font-bold"
-      >&times;</button>
+<div
+x-show="showModal"
+class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+<div
+  @click.away="closeModal()"
+  x-trap.noscroll="showModal"
+  class="bg-white rounded-lg shadow-lg w-11/12 max-w-lg p-6 relative
+         overflow-y-auto max-h-[80vh]"  <!-- ← scroll & height cap -->
+>
+  <button
+    @click="closeModal()"
+    class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl font-bold"
+  >&times;</button>
 
-      <h2 class="text-xl font-semibold mb-4">Notes</h2>
-      <div class="whitespace-pre-wrap text-sm text-gray-700" x-text="selectedNotes"></div>
-    </div>
-  </div>
+  <h2 class="text-xl font-semibold mb-4">Notes</h2>
+  <div
+    class="whitespace-pre-wrap text-sm text-gray-700"
+    x-text="selectedNotes"
+  ></div>
+</div>
+</div>
 
   <script>
     function tableApp() {
