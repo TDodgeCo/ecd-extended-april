@@ -111,7 +111,15 @@
             <td class="px-4 py-2 text-sm" x-text="formatDate(row.createddate)"></td>
             <td class="px-4 py-2 text-sm" x-text="formatDate(row.lastupdatedate)"></td>
             <td class="px-4 py-2 text-sm" x-text="formatDate(row.estimatedclosedate)"></td>
-            <td class="px-4 py-2 text-sm" x-text="row.opty_number"></td>
+            <td class="px-4 py-2 text-sm">
+              <a
+                x-bind:href="`https://sunwardsteel.clearc2.com/?openDocument=true&class=C2opportunity&id=${row.id}`"
+                target="_blank"
+                rel="noopener noreferrer"
+                x-text="row.opty_number"
+                class="text-indigo-600 hover:underline"
+              ></a>
+            </td>
             <td class="px-4 py-2 text-sm" x-text="row.ownername"></td>
             <td class="px-4 py-2 text-sm" x-text="formatCurrency(row.grossrevenue)"></td>
             <td class="px-4 py-2 text-sm" x-text="row.percent"></td>
